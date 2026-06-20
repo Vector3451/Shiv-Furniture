@@ -2,6 +2,7 @@
 // Full Mini ERP Schema — drops and recreates everything
 // Run: node db/setup-schema.js
 
+require('./dns-override');
 require('dotenv').config();
 const { Client } = require('pg');
 

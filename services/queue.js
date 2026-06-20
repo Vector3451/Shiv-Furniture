@@ -62,15 +62,17 @@ class JobQueue {
             [err.message, job.id]);
         }
       }
-    } catch (err) {
-      console.error('⚠️ JobQueue process error (connection issue or query failure):', err.message);
     } finally {
       this.processing = false;
     }
   }
 
   start(intervalMs = 10000) {
-    this.interval = setInterval(() => this.process(), intervalMs);
+    this.interval = setInterval(() => {
+      this.process().catch(err => {
+        console.warn('⚠️  Job queue cycle error (DB may be unreachable):', err.message);
+      });
+    }, intervalMs);
     console.log(`🔄 Job queue started (polling every ${intervalMs / 1000}s)`);
   }
 

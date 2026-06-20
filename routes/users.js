@@ -21,6 +21,9 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', adminOnly, async (req, res) => {
+  if (!req.session?.isElevated) {
+    return res.status(403).json({ error: 'This operation requires Elevated Role (Security Admin)' });
+  }
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -49,6 +52,9 @@ router.post('/', adminOnly, async (req, res) => {
 });
 
 router.put('/:id', adminOnly, async (req, res) => {
+  if (!req.session?.isElevated) {
+    return res.status(403).json({ error: 'This operation requires Elevated Role (Security Admin)' });
+  }
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -80,6 +86,9 @@ router.put('/:id', adminOnly, async (req, res) => {
 });
 
 router.delete('/:id', adminOnly, async (req, res) => {
+  if (!req.session?.isElevated) {
+    return res.status(403).json({ error: 'This operation requires Elevated Role (Security Admin)' });
+  }
   try {
     if (req.params.id === getUserId(req)) return res.status(400).json({ error: 'Cannot deactivate yourself' });
     await pool.query(`UPDATE users SET is_active = false WHERE id = $1`, [req.params.id]);

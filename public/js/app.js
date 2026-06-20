@@ -100,6 +100,17 @@ async function checkAuth() {
       $('userAvatarPlaceholder').style.display = 'flex';
     }
 
+    // Elevate Role UI config
+    const elevContainer = $('elevatePrivilegeContainer');
+    if (elevContainer) {
+      if (user.role === 'admin') {
+        elevContainer.style.display = 'flex';
+        updateElevationHeaderUI(user.isElevated);
+      } else {
+        elevContainer.style.display = 'none';
+      }
+    }
+
     // Role-based navigation item hiding
     enforceModulePermissions(user);
     
@@ -110,12 +121,37 @@ async function checkAuth() {
   }
 }
 
+function updateElevationHeaderUI(isElevated) {
+  const btnElevate = $('btnElevateRole');
+  const badgeElevated = $('elevatedRoleBadge');
+  if (isElevated) {
+    if (btnElevate) btnElevate.style.display = 'none';
+    if (badgeElevated) badgeElevated.style.display = 'flex';
+  } else {
+    if (btnElevate) btnElevate.style.display = 'flex';
+    if (badgeElevated) badgeElevated.style.display = 'none';
+  }
+}
+
+function showLockScreen(containerId, description, onElevateClick) {
+  const container = $(containerId);
+  container.innerHTML = `
+    <div class="lock-screen-wrapper" style="margin: 20px;">
+      <div class="lock-icon">🔒</div>
+      <div class="lock-title">Security Admin Elevation Required</div>
+      <div class="lock-desc" style="margin: 10px 0 20px; font-size: 13.5px; color: var(--text-secondary); max-width: 450px; line-height: 1.5;">${description}</div>
+      <button class="btn btn-primary" id="btnLockScreenElevate">🛡️ Elevate Session Privileges</button>
+    </div>
+  `;
+  $('btnLockScreenElevate').onclick = onElevateClick;
+}
+
 function enforceModulePermissions(user) {
   // Access matrix:
   const rights = {};
   if (user.role === 'admin') {
     // Admins have access to all modules
-    ['products','sales','purchase','manufacturing','bom','inventory','audit','users'].forEach(m => rights[m] = 'admin');
+    ['products','sales','purchase','manufacturing','bom','inventory','audit','users','incidents'].forEach(m => rights[m] = 'admin');
   } else {
     // Load custom rights mapped from the API database
     (user.access_rights || []).forEach(ar => {
@@ -125,8 +161,9 @@ function enforceModulePermissions(user) {
     });
   }
 
-  // Set default rights for dashboard and logs
+  // Set default rights for dashboard and incidents
   rights['dashboard'] = 'user';
+  rights['incidents'] = 'user';
 
   // Toggle nav element visibility
   const navItems = {
@@ -138,6 +175,7 @@ function enforceModulePermissions(user) {
     manufacturing: 'nav-manufacturing',
     inventory: 'nav-inventory',
     boms: 'nav-boms',
+    incidents: 'nav-incidents',
     users: 'nav-users',
     audit: 'nav-audit'
   };
@@ -186,12 +224,19 @@ function navigateTo(page) {
     manufacturing: 'Shopfloor Manufacturing Routing',
     inventory: 'Stock Movement Audit Ledger',
     boms: 'Manufacturing Bill of Materials (BoM)',
+    incidents: 'Service Desk Incidents & SLAs',
     users: 'System Users Access Rights',
     audit: 'Database Security Audit Trial'
   };
 
   $('pageTitle').textContent = titles[page] || 'Mini ERP';
   $('breadcrumbCurrent').textContent = page.charAt(0).toUpperCase() + page.slice(1);
+
+  // If Audit page is active but not elevated, render lock screen and abort API calls
+  if (page === 'audit' && !currentUser.isElevated) {
+    showLockScreen('page-audit', 'The System Security Audit Trail contains sensitive records of all user logins, logouts, transactions, and system updates. You must elevate your role to Security Admin to view the logs.', () => openModal('modalElevateRole'));
+    return;
+  }
 
   // Load page data
   loadPageData(page);
@@ -208,6 +253,7 @@ function loadPageData(page) {
     case 'manufacturing': loadManufacturing(); break;
     case 'inventory': loadInventoryLedger(); break;
     case 'boms': loadBoms(); break;
+    case 'incidents': loadIncidents(); break;
     case 'users': loadUsers(); break;
     case 'audit': loadAuditLogs(); break;
   }
@@ -1048,7 +1094,7 @@ async function paySalesOrder(id) {
       key: orderData.key_id,
       amount: orderData.amount,
       currency: orderData.currency,
-      name: 'Shiv Furniture Works',
+      name: 'Mini ERP',
       description: `Sales Order Payment`,
       order_id: orderData.razorpay_order_id,
       handler: async function (response) {
@@ -1075,7 +1121,7 @@ async function paySalesOrder(id) {
         name: currentUser.full_name,
         email: currentUser.email
       },
-      theme: { color: '#c8a2c8' }
+      theme: { color: '#1A56DB' }
     };
 
     const rzp = new Razorpay(options);
@@ -2141,6 +2187,563 @@ async function loadAuditLogs() {
 }
 
 
+// ── ServiceNow Elevate Role & Service Desk Features ──────────────────────────
+let incidentsCache = [];
+let currentIncident = null;
+let activeIncidentTimelineType = 'comment'; // 'comment' or 'work_note'
+let slaInterval = null;
+
+// Toggles active tab under incident timeline stream (Work Notes vs Customer Comments)
+function setTimelineUpdateType(type) {
+  activeIncidentTimelineType = type;
+  const btnComment = $('btnToggleComment');
+  const btnWorknote = $('btnToggleWorknote');
+  const textarea = $('incDetailNewUpdateText');
+  
+  if (type === 'comment') {
+    if (btnComment) btnComment.classList.add('active');
+    if (btnWorknote) btnWorknote.classList.remove('active');
+    if (textarea) textarea.placeholder = 'Type a comment visible to callers...';
+  } else {
+    if (btnComment) btnComment.classList.remove('active');
+    if (btnWorknote) btnWorknote.classList.add('active');
+    if (textarea) textarea.placeholder = 'Type an internal work note (visible to staff only)...';
+  }
+}
+
+// Loads incidents from the server and populates the list view
+async function loadIncidents() {
+  showLoader(true);
+  try {
+    const dept = $('incidentDeptFilter').value;
+    const priority = $('incidentPriorityFilter').value;
+    const search = $('incidentSearch').value.toLowerCase().trim();
+
+    const list = await apiFetch('/api/incidents');
+    incidentsCache = list || [];
+
+    // Filter list
+    let filtered = list;
+    if (dept) {
+      filtered = filtered.filter(x => x.assigned_department === dept);
+    }
+    if (priority) {
+      filtered = filtered.filter(x => x.priority === priority);
+    }
+    if (search) {
+      filtered = filtered.filter(x => 
+        x.number.toLowerCase().includes(search) ||
+        x.title.toLowerCase().includes(search) ||
+        (x.description && x.description.toLowerCase().includes(search))
+      );
+    }
+
+    // Update KPI counters
+    const activeList = list.filter(x => !['Resolved', 'Closed'].includes(x.status));
+    $('kpi-active-incidents').textContent = activeList.length;
+    $('kpi-active-incidents-sub').textContent = `${activeList.filter(x => x.status === 'New').length} unassigned tickets`;
+
+    const breachedList = activeList.filter(x => x.sla_status === 'Breached' || new Date() > new Date(x.sla_due_at));
+    $('kpi-breached-incidents').textContent = breachedList.length;
+    $('kpi-breached-incidents-sub').textContent = `${breachedList.length} SLAs breached`;
+
+    const p1List = activeList.filter(x => x.priority === 'P1');
+    $('kpi-p1-incidents').textContent = p1List.length;
+    $('kpi-p1-incidents-sub').textContent = `${p1List.length} urgent triggers`;
+
+    const myId = currentUser?.id;
+    const myList = activeList.filter(x => x.assigned_to === myId);
+    $('kpi-my-incidents').textContent = myList.length;
+    $('kpi-my-incidents-sub').textContent = `${myList.length} tickets to solve`;
+
+    // Render Table
+    const tbody = $('incidentsTable');
+    tbody.innerHTML = '';
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted p-4">No incidents logged matching criteria.</td></tr>';
+      return;
+    }
+
+    filtered.forEach(inc => {
+      // Determine priority badge class
+      const pBadgeClass = inc.priority.toLowerCase();
+      
+      const tr = document.createElement('tr');
+      tr.setAttribute('data-incident-id', inc.id);
+      tr.setAttribute('data-sla-due', inc.sla_due_at);
+      tr.setAttribute('data-created-at', inc.created_at);
+      tr.setAttribute('data-status', inc.status);
+      tr.setAttribute('data-priority', inc.priority);
+
+      tr.innerHTML = `
+        <td class="sticky-col"><strong><a href="#" onclick="openIncidentDetails('${inc.id}'); event.preventDefault();">${inc.number}</a></strong></td>
+        <td>
+          <div class="font-weight-bold">${inc.title}</div>
+          <div class="text-muted text-truncate-cell" title="${inc.description || ''}">${inc.description || '—'}</div>
+        </td>
+        <td><span class="badge badge-${pBadgeClass}">${inc.priority}</span></td>
+        <td><span class="badge badge-${inc.caller_department.toLowerCase()}">${inc.caller_department.replace(/_user|_manager/g, '')}</span></td>
+        <td><span class="badge badge-${inc.assigned_department.toLowerCase()}">${inc.assigned_department.replace(/_user|_manager/g, '')}</span></td>
+        <td><strong>${inc.assignee_name || '—'}</strong></td>
+        <td>${buildBadge(inc.status)}</td>
+        <td>
+          <div class="sla-container" id="sla-wrap-${inc.id}">
+            <!-- SLA visual timers rendered dynamically -->
+            <span class="sla-timer" id="sla-timer-${inc.id}">Calculating...</span>
+            <div class="sla-progress-bar" style="margin-top: 3px; max-width: 140px;">
+              <div class="sla-progress-fill" id="sla-fill-${inc.id}" style="width: 100%;"></div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <button class="btn btn-secondary btn-xs" onclick="openIncidentDetails('${inc.id}')">View</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Start live ticking
+    if (!slaInterval) {
+      slaInterval = setInterval(tickSlaTimers, 1000);
+    }
+    // Immediate tick
+    tickSlaTimers();
+
+  } catch (err) {
+    console.error('Error loading incidents:', err);
+  } finally {
+    showLoader(false);
+  }
+}
+
+// Live counts down SLA timers and rendering colors
+function tickSlaTimers() {
+  const rows = document.querySelectorAll('#incidentsTable tr[data-incident-id]');
+  const isDetailsOpen = $('modalIncidentDetail').classList.contains('open');
+
+  rows.forEach(row => {
+    const id = row.getAttribute('data-incident-id');
+    const slaDueStr = row.getAttribute('data-sla-due');
+    const createdStr = row.getAttribute('data-created-at');
+    const status = row.getAttribute('data-status');
+    const priority = row.getAttribute('data-priority');
+
+    const now = new Date().getTime();
+    const created = new Date(createdStr).getTime();
+    const slaDue = new Date(slaDueStr).getTime();
+    const totalDuration = slaDue - created;
+
+    const timerSpan = $(`sla-timer-${id}`);
+    const fillBar = $(`sla-fill-${id}`);
+
+    // If Resolved or Closed, SLA stops counting
+    if (['Resolved', 'Closed'].includes(status)) {
+      if (timerSpan) {
+        timerSpan.textContent = 'Completed';
+        timerSpan.className = 'sla-timer sla-safe';
+      }
+      if (fillBar) {
+        fillBar.style.width = '100%';
+        fillBar.className = 'sla-progress-fill sla-fill-safe';
+      }
+
+      // Update details SLA if this incident detail is open
+      if (isDetailsOpen && currentIncident && currentIncident.id === id) {
+        $('incDetailSlaTimer').textContent = 'Completed';
+        $('incDetailSlaTimer').className = 'sla-timer sla-safe';
+        $('incDetailSlaProgressFill').style.width = '100%';
+        $('incDetailSlaProgressFill').className = 'sla-progress-fill sla-fill-safe';
+      }
+      return;
+    }
+
+    // On Hold - SLA is paused
+    if (status === 'On Hold') {
+      if (timerSpan) {
+        timerSpan.textContent = 'Paused';
+        timerSpan.className = 'sla-timer';
+      }
+      if (fillBar) {
+        fillBar.style.width = '100%';
+        fillBar.className = 'sla-progress-fill';
+      }
+      if (isDetailsOpen && currentIncident && currentIncident.id === id) {
+        $('incDetailSlaTimer').textContent = 'Paused';
+        $('incDetailSlaTimer').className = 'sla-timer';
+        $('incDetailSlaProgressFill').style.width = '100%';
+        $('incDetailSlaProgressFill').className = 'sla-progress-fill';
+      }
+      return;
+    }
+
+    const timeRemaining = slaDue - now;
+
+    let timerText = '';
+    let timerClass = 'sla-safe';
+    let fillClass = 'sla-fill-safe';
+    let pct = 100;
+
+    if (timeRemaining <= 0) {
+      timerText = 'Breached';
+      timerClass = 'sla-timer sla-breached';
+      fillClass = 'sla-fill-breached';
+      pct = 100;
+    } else {
+      pct = (timeRemaining / totalDuration) * 100;
+      pct = Math.max(0, Math.min(100, pct));
+
+      // Visual warning triggers (warning if under 20% SLA remaining)
+      if (pct < 20) {
+        timerClass = 'sla-timer sla-warning';
+        fillClass = 'sla-fill-warning';
+      }
+
+      // Format remaining time hh:mm:ss
+      const hrs = Math.floor(timeRemaining / (3600 * 1000));
+      const mins = Math.floor((timeRemaining % (3600 * 1000)) / (60 * 1000));
+      const secs = Math.floor((timeRemaining % (60 * 1000)) / 1000);
+      timerText = `${hrs}h ${mins}m ${secs}s`;
+    }
+
+    if (timerSpan) {
+      timerSpan.textContent = timerText;
+      timerSpan.className = `sla-timer ${timerClass}`;
+    }
+    if (fillBar) {
+      fillBar.style.width = `${pct}%`;
+      fillBar.className = `sla-progress-fill ${fillClass}`;
+    }
+
+    // Render detail SLA if active
+    if (isDetailsOpen && currentIncident && currentIncident.id === id) {
+      $('incDetailSlaTimer').textContent = timerText;
+      $('incDetailSlaTimer').className = `sla-timer ${timerClass}`;
+      $('incDetailSlaProgressFill').style.width = `${pct}%`;
+      $('incDetailSlaProgressFill').className = `sla-progress-fill ${fillClass}`;
+    }
+  });
+}
+
+// Opens the side modal with detailed incident log, reassignments, comments stream, and overrides
+async function openIncidentDetails(id) {
+  showLoader(true);
+  try {
+    const inc = await apiFetch(`/api/incidents/${id}`);
+    currentIncident = inc;
+
+    $('incDetailNumber').textContent = `Incident: ${inc.number}`;
+    $('incDetailTitle').textContent = inc.title;
+    $('incDetailDescription').textContent = inc.description || '—';
+    $('incDetailSlaDue').textContent = format.datetime(inc.sla_due_at);
+    
+    // Status Badge
+    const statusContainer = $('incDetailStatusBadge');
+    statusContainer.innerHTML = buildBadge(inc.status);
+
+    const slaStateContainer = $('incDetailSlaState');
+    slaStateContainer.innerHTML = `<span class="badge badge-${inc.sla_status === 'Breached' ? 'failed' : (inc.sla_status === 'Completed' ? 'fully_delivered' : 'in_progress')}">${inc.sla_status}</span>`;
+
+    // Dropdowns
+    $('incDetailStatus').value = inc.status;
+    $('incDetailReassignDept').value = inc.assigned_department;
+
+    // Load active staff for assignment selection
+    const staffSelect = $('incDetailAssignee');
+    staffSelect.innerHTML = '<option value="">-- Unassigned --</option>';
+    const users = await apiFetch('/api/users');
+    users.forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.id;
+      opt.textContent = `${u.full_name} (${u.role.replace(/_user|_manager/g, '')})`;
+      staffSelect.appendChild(opt);
+    });
+    staffSelect.value = inc.assigned_to || '';
+
+    // Show SLA overrides only for security admins (Elevated Role)
+    const overrideWrap = $('slaOverrideWrapper');
+    if (currentUser?.isElevated) {
+      overrideWrap.style.display = 'block';
+      // Default to current SLA time
+      if (inc.sla_due_at) {
+        const d = new Date(inc.sla_due_at);
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        $('incDetailOverrideSla').value = d.toISOString().slice(0, 16);
+      }
+    } else {
+      overrideWrap.style.display = 'none';
+    }
+
+    // Render updates Timeline Stream
+    renderTimelineStream(inc.updates || []);
+    
+    // Clear update input text
+    $('incDetailNewUpdateText').value = '';
+    setTimelineUpdateType('comment'); // default tab
+
+    openModal('modalIncidentDetail');
+  } catch (err) {
+    console.error(err);
+  } finally {
+    showLoader(false);
+  }
+}
+
+// Renders the timeline list of Comments, Work Notes and audit logs
+function renderTimelineStream(updates) {
+  const stream = $('incDetailTimeline');
+  stream.innerHTML = '';
+  
+  if (updates.length === 0) {
+    stream.innerHTML = '<div class="text-center text-muted p-2">No activity logged.</div>';
+    return;
+  }
+
+  // If standard user, filter out internal 'work_note' timeline updates (ServiceNow style)
+  const filtered = updates.filter(u => {
+    if (u.update_type === 'work_note') {
+      // Only admin, business owners or assigned groups can see internal work notes
+      return ['admin', 'business_owner', 'inventory_manager'].includes(currentUser?.role);
+    }
+    return true;
+  });
+
+  filtered.forEach(u => {
+    const item = document.createElement('div');
+    item.className = `timeline-item ${u.update_type}`;
+    
+    let typeBadgeText = 'System';
+    if (u.update_type === 'comment') typeBadgeText = 'Comment';
+    if (u.update_type === 'work_note') typeBadgeText = 'Work Note';
+
+    item.innerHTML = `
+      <div class="timeline-meta">
+        <div class="timeline-meta-left">
+          <span class="timeline-badge">${typeBadgeText}</span>
+          <strong>${u.user_name || 'System'}</strong>
+        </div>
+        <span>${format.datetime(u.created_at)}</span>
+      </div>
+      <div>${u.content}</div>
+    `;
+    stream.appendChild(item);
+  });
+  
+  // Scroll to bottom of stream
+  setTimeout(() => stream.scrollTop = stream.scrollHeight, 100);
+}
+
+// ── Bind event handlers for ServiceNow Modals ─────────────────────────────────
+
+// Create ticket submit
+$('createIncidentForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const payload = {
+    title: $('incTitle').value.trim(),
+    description: $('incDescription').value.trim(),
+    priority: $('incPriority').value,
+    assigned_department: $('incAssignedDept').value
+  };
+
+  showLoader(true);
+  try {
+    await apiFetch('/api/incidents', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    toast('Operational Incident logged successfully');
+    closeModal('modalCreateIncident');
+    loadIncidents();
+  } catch (err) {
+    console.error(err);
+  } finally {
+    showLoader(false);
+  }
+});
+
+// Update Assignee
+$('incDetailAssignee').addEventListener('change', async () => {
+  if (!currentIncident) return;
+  showLoader(true);
+  try {
+    await apiFetch(`/api/incidents/${currentIncident.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ assigned_to: $('incDetailAssignee').value || null })
+    });
+    toast('Ticket assignee updated');
+    openIncidentDetails(currentIncident.id);
+    loadIncidents();
+  } catch (err) {
+    console.error(err);
+  } finally {
+    showLoader(false);
+  }
+});
+
+// Update Status
+$('incDetailStatus').addEventListener('change', async () => {
+  if (!currentIncident) return;
+  showLoader(true);
+  try {
+    await apiFetch(`/api/incidents/${currentIncident.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status: $('incDetailStatus').value })
+    });
+    toast('Ticket status updated');
+    openIncidentDetails(currentIncident.id);
+    loadIncidents();
+  } catch (err) {
+    console.error(err);
+  } finally {
+    showLoader(false);
+  }
+});
+
+// Post timeline comment/work note
+$('btnIncPostUpdate').addEventListener('click', async () => {
+  if (!currentIncident) return;
+  const content = $('incDetailNewUpdateText').value.trim();
+  if (!content) {
+    toast('Please type some content before posting', 'error');
+    return;
+  }
+
+  showLoader(true);
+  try {
+    await apiFetch(`/api/incidents/${currentIncident.id}/updates`, {
+      method: 'POST',
+      body: JSON.stringify({ content, update_type: activeIncidentTimelineType })
+    });
+    toast(activeIncidentTimelineType === 'comment' ? 'Comment posted' : 'Work note saved');
+    openIncidentDetails(currentIncident.id);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    showLoader(false);
+  }
+});
+
+// Reassign Department group
+$('btnIncDetailReassign').addEventListener('click', async () => {
+  if (!currentIncident) return;
+  const newDept = $('incDetailReassignDept').value;
+  if (newDept === currentIncident.assigned_department) {
+    toast('Ticket is already assigned to this department', 'info');
+    return;
+  }
+
+  showLoader(true);
+  try {
+    await apiFetch(`/api/incidents/${currentIncident.id}/reassign`, {
+      method: 'POST',
+      body: JSON.stringify({ department: newDept })
+    });
+    toast('Ticket department group reassigned successfully');
+    openIncidentDetails(currentIncident.id);
+    loadIncidents();
+  } catch (err) {
+    console.error(err);
+  } finally {
+    showLoader(false);
+  }
+});
+
+// Override SLA manually (Security Admin elevated role only)
+$('btnIncOverrideSla').addEventListener('click', async () => {
+  if (!currentIncident) return;
+  const overrideSla = $('incDetailOverrideSla').value;
+  if (!overrideSla) {
+    toast('Please pick an override SLA timestamp', 'error');
+    return;
+  }
+
+  showLoader(true);
+  try {
+    await apiFetch(`/api/incidents/${currentIncident.id}/override-sla`, {
+      method: 'POST',
+      body: JSON.stringify({ new_sla_due: new Date(overrideSla).toISOString() })
+    });
+    toast('SLA overridden successfully by Security Admin');
+    openIncidentDetails(currentIncident.id);
+    loadIncidents();
+  } catch (err) {
+    console.error(err);
+  } finally {
+    showLoader(false);
+  }
+});
+
+// Create Incident Button Click Trigger
+$('btnCreateIncident').onclick = () => {
+  $('createIncidentForm').reset();
+  openModal('modalCreateIncident');
+};
+
+// Search / filters binding on incident panel
+$('incidentDeptFilter').addEventListener('change', loadIncidents);
+$('incidentPriorityFilter').addEventListener('change', loadIncidents);
+$('incidentSearch').addEventListener('input', debounce(loadIncidents, 350));
+
+// ── Bind Elevate Role session authentication logic ───────────────────────────
+
+$('btnElevateRole').onclick = () => {
+  $('elevateForm').reset();
+  $('elevateUserLabel').textContent = currentUser?.full_name || 'System Admin';
+  $('elevateErrorAlert').style.display = 'none';
+  openModal('modalElevateRole');
+};
+
+$('elevateForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const password = $('elevatePassword').value;
+  
+  showLoader(true);
+  $('elevateErrorAlert').style.display = 'none';
+  
+  try {
+    const res = await apiFetch('/api/auth/elevate', {
+      method: 'POST',
+      body: JSON.stringify({ password })
+    });
+    
+    if (res.ok) {
+      toast('Privilege Elevation Active — Security Admin Mode initialized', 'success');
+      closeModal('modalElevateRole');
+      
+      // Update global user model
+      currentUser.isElevated = true;
+      updateElevationHeaderUI(true);
+      
+      // Reload current tab view to unlock locking screens instantly
+      navigateTo(activePage);
+    }
+  } catch (err) {
+    $('elevateErrorAlert').textContent = err.message || 'Invalid administrator password';
+    $('elevateErrorAlert').style.display = 'block';
+  } finally {
+    showLoader(false);
+  }
+});
+
+$('elevatedRoleBadge').onclick = async () => {
+  if (confirm('De-elevate session privileges and return to normal administrator rights?')) {
+    showLoader(true);
+    try {
+      const res = await apiFetch('/api/auth/de-elevate', { method: 'POST' });
+      if (res.ok) {
+        toast('Privilege De-elevation Active — Normal Admin permissions restored');
+        currentUser.isElevated = false;
+        updateElevationHeaderUI(false);
+        navigateTo(activePage); // Lock screens on protected tabs immediately
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      showLoader(false);
+    }
+  }
+};
+
 // ── Bootstrap logic ──────────────────────────────────────────────────────
 let cache = {
   workCenters: []
@@ -2185,3 +2788,4 @@ function debounce(func, wait) {
 document.addEventListener('DOMContentLoaded', () => {
   checkAuth();
 });
+

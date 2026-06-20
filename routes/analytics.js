@@ -83,6 +83,9 @@ router.get('/top-products', async (req, res) => {
 });
 
 router.get('/audit-logs', async (req, res) => {
+  if (!req.session?.isElevated) {
+    return res.status(403).json({ error: 'This operation requires Elevated Role (Security Admin)' });
+  }
   try {
     const { limit = 100, table_name } = req.query;
     const params = [];

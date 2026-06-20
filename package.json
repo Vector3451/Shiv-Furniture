@@ -1,7 +1,7 @@
 {
   "name": "mini-erp",
   "version": "1.0.0",
-  "description": "Shiv Furniture — Mini ERP System (From Demand to Delivery)",
+  "description": "Mini ERP System — Generic B2B Enterprise Resource Planning Platform",
   "main": "server.js",
   "scripts": {
     "dev": "node server.js",

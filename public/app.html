@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shiv Furniture Works — Enterprise ERP</title>
-  <meta name="description" content="End-to-end cloud ERP for Shiv Furniture Works — digitalizing inventory, manufacturing, sales, procurement and payments." />
+  <title>Mini ERP — Enterprise Resource Planning</title>
+  <meta name="description" content="Mini ERP — all-in-one B2B enterprise platform for inventory, manufacturing, sales, procurement and payments." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
@@ -18,11 +18,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <div class="logo">
-          <div class="logo-icon">SF</div>
-          <div class="logo-text">
-            <span class="logo-name">Shiv Furniture</span>
-            <span class="logo-sub">Enterprise Suite</span>
-          </div>
+          <img src="/images/logo.png" class="brand-logo-img" alt="ERP Suite">
         </div>
         <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -62,6 +58,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
           <span>Bill of Materials</span>
         </a>
+        <a class="nav-item" data-page="incidents" href="#" id="nav-incidents">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Service Desk & SLAs</span>
+        </a>
         <a class="nav-item" data-page="users" href="#" id="nav-users">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <span>User Access</span>
@@ -98,10 +98,16 @@
           </button>
           <div>
             <h1 class="page-title" id="pageTitle">Dashboard</h1>
-            <div class="breadcrumbs">Shiv Furniture Suite &nbsp;/&nbsp; <span id="breadcrumbCurrent">Overview</span></div>
+            <div class="breadcrumbs">Mini ERP &nbsp;/&nbsp; <span id="breadcrumbCurrent">Overview</span></div>
           </div>
         </div>
         <div class="topbar-right">
+          <div id="elevatePrivilegeContainer" style="display: none; align-items: center; margin-right: 10px;">
+            <button class="btn btn-secondary btn-sm btn-elevate" id="btnElevateRole" title="Elevate privileges to Security Admin">🛡️ Elevate Role</button>
+            <div class="elevated-badge" id="elevatedRoleBadge" style="display: none;" title="Security Admin Mode active. Click to De-elevate.">
+              <span>🛡️ Security Admin Active</span>
+            </div>
+          </div>
           <div class="search-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="globalSearch" placeholder="Quick search SKU, product, order..." />
@@ -117,7 +123,7 @@
         <div class="kpi-grid">
           <div class="kpi-card glassmorphism accent-lilac">
             <div class="kpi-meta">
-              <span class="kpi-label">Workplace Revenue</span>
+              <span class="kpi-label">Total Revenue</span>
               <div class="kpi-icon">₹</div>
             </div>
             <div class="kpi-value" id="kpi-revenue">₹0.00</div>
@@ -239,15 +245,15 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>SKU</th>
-                  <th>Product Details</th>
-                  <th>Type</th>
-                  <th>Sales Price</th>
-                  <th>Cost Price</th>
-                  <th>On Hand</th>
-                  <th>Reserved</th>
-                  <th>Free Stock</th>
-                  <th>Actions</th>
+                  <th class="sticky-col col-sku">SKU</th>
+                  <th class="col-name">Product Details</th>
+                  <th class="col-type">Type</th>
+                  <th class="col-price">Sales Price</th>
+                  <th class="col-price">Cost Price</th>
+                  <th class="col-qty">On Hand</th>
+                  <th class="col-qty">Reserved</th>
+                  <th class="col-qty">Free Stock</th>
+                  <th class="col-actions">Actions</th>
                 </tr>
               </thead>
               <tbody id="productsTable"></tbody>
@@ -278,14 +284,14 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Code</th>
-                  <th>Account Name</th>
-                  <th>Type Badge</th>
-                  <th>GST Number</th>
-                  <th>Phone Number</th>
-                  <th>Email Address</th>
-                  <th>Office Address</th>
-                  <th>Actions</th>
+                  <th class="sticky-col col-shorttext">Code</th>
+                  <th class="col-name">Account Name</th>
+                  <th class="col-type">Type Badge</th>
+                  <th class="col-shorttext">GST Number</th>
+                  <th class="col-shorttext">Phone Number</th>
+                  <th class="col-longtext">Email Address</th>
+                  <th class="col-longtext">Office Address</th>
+                  <th class="col-shorttext">Actions</th>
                 </tr>
               </thead>
               <tbody id="partiesTable"></tbody>
@@ -319,15 +325,15 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Order No.</th>
-                  <th>Customer Client</th>
-                  <th>Total Items</th>
-                  <th>Grand Total</th>
-                  <th>Date Placed</th>
-                  <th>Expected Dispatch</th>
-                  <th>Payment State</th>
-                  <th>Order State</th>
-                  <th style="width:250px;">Process Controls</th>
+                  <th class="sticky-col col-shorttext">Order No.</th>
+                  <th class="col-name">Customer Client</th>
+                  <th class="col-shorttext">Total Items</th>
+                  <th class="col-price">Grand Total</th>
+                  <th class="col-date">Date Placed</th>
+                  <th class="col-date">Expected Dispatch</th>
+                  <th class="col-status">Payment State</th>
+                  <th class="col-status">Order State</th>
+                  <th class="col-actions">Process Controls</th>
                 </tr>
               </thead>
               <tbody id="salesTable"></tbody>
@@ -359,14 +365,14 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Order No.</th>
-                  <th>Vendor Supplier</th>
-                  <th>Items</th>
-                  <th>Total Amount</th>
-                  <th>Order Date</th>
-                  <th>Expected Delivery</th>
-                  <th>Status</th>
-                  <th style="width:180px;">Goods Control</th>
+                  <th class="sticky-col col-shorttext">Order No.</th>
+                  <th class="col-name">Vendor Supplier</th>
+                  <th class="col-shorttext">Items</th>
+                  <th class="col-price">Total Amount</th>
+                  <th class="col-date">Order Date</th>
+                  <th class="col-date">Expected Delivery</th>
+                  <th class="col-status">Status</th>
+                  <th class="col-actions">Goods Control</th>
                 </tr>
               </thead>
               <tbody id="purchasesTable"></tbody>
@@ -399,15 +405,15 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>MO Code</th>
-                  <th>Furniture Item</th>
-                  <th>BoM Spec</th>
-                  <th>Target Qty</th>
-                  <th>Completed Qty</th>
-                  <th>Completion Progress</th>
-                  <th>Priority</th>
-                  <th>Shop floor Status</th>
-                  <th style="width:280px;">Production Control</th>
+                  <th class="sticky-col col-shorttext">MO Code</th>
+                  <th class="col-name">Product / Item</th>
+                  <th class="col-name">BoM Spec</th>
+                  <th class="col-qty">Target Qty</th>
+                  <th class="col-qty">Completed Qty</th>
+                  <th class="col-longtext">Completion Progress</th>
+                  <th class="col-shorttext">Priority</th>
+                  <th class="col-status">Shop floor Status</th>
+                  <th class="col-actions">Production Control</th>
                 </tr>
               </thead>
               <tbody id="mfgTable"></tbody>
@@ -436,15 +442,15 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Product Details</th>
-                  <th>SKU</th>
-                  <th>Transaction Category</th>
-                  <th>Reference Voucher</th>
-                  <th>Qty Delta</th>
-                  <th>Cost Basis</th>
-                  <th>Ledger Running Balance</th>
-                  <th>Authorized By</th>
-                  <th>Timestamp</th>
+                  <th class="sticky-col col-name">Product Details</th>
+                  <th class="col-sku">SKU</th>
+                  <th class="col-type">Transaction Category</th>
+                  <th class="col-shorttext">Reference Voucher</th>
+                  <th class="col-qty">Qty Delta</th>
+                  <th class="col-price">Cost Basis</th>
+                  <th class="col-qty">Ledger Running Balance</th>
+                  <th class="col-name">Authorized By</th>
+                  <th class="col-date">Timestamp</th>
                 </tr>
               </thead>
               <tbody id="inventoryTable"></tbody>
@@ -469,15 +475,15 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Recipe Specification Name</th>
-                  <th>Finished Product</th>
-                  <th>Product SKU</th>
-                  <th>Revision Version</th>
-                  <th>Components Required</th>
-                  <th>Assembly Operations</th>
-                  <th>Active Status</th>
-                  <th>Date Drafted</th>
-                  <th>Actions</th>
+                  <th class="sticky-col col-name">Recipe Specification Name</th>
+                  <th class="col-name">Finished Product</th>
+                  <th class="col-sku">Product SKU</th>
+                  <th class="col-shorttext">Revision Version</th>
+                  <th class="col-shorttext">Components Required</th>
+                  <th class="col-shorttext">Assembly Operations</th>
+                  <th class="col-shorttext">Active Status</th>
+                  <th class="col-date">Date Drafted</th>
+                  <th class="col-actions">Actions</th>
                 </tr>
               </thead>
               <tbody id="bomsTable"></tbody>
@@ -499,13 +505,13 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Login ID</th>
-                  <th>Employee Name</th>
-                  <th>Corporate Role</th>
-                  <th>Work Email</th>
-                  <th>Access Rights</th>
-                  <th>Account Status</th>
-                  <th>Actions</th>
+                  <th class="sticky-col col-shorttext">Login ID</th>
+                  <th class="col-name">Employee Name</th>
+                  <th class="col-type">Corporate Role</th>
+                  <th class="col-longtext">Work Email</th>
+                  <th class="col-longtext">Access Rights</th>
+                  <th class="col-status">Account Status</th>
+                  <th class="col-actions">Actions</th>
                 </tr>
               </thead>
               <tbody id="usersTable"></tbody>
@@ -521,16 +527,100 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Entity Log Table</th>
-                  <th>Record Reference ID</th>
-                  <th>Operation Action</th>
-                  <th>System User</th>
-                  <th>Device IP Address</th>
-                  <th>Activity Description</th>
-                  <th>Timestamp</th>
+                  <th class="sticky-col col-type">Entity Log Table</th>
+                  <th class="col-longtext">Record Reference ID</th>
+                  <th class="col-type">Operation Action</th>
+                  <th class="col-name">System User</th>
+                  <th class="col-shorttext">Device IP Address</th>
+                  <th class="col-longtext">Activity Description</th>
+                  <th class="col-date">Timestamp</th>
                 </tr>
               </thead>
               <tbody id="auditTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PAGE: Service Desk & SLAs ────────────────────────────────────── -->
+      <section class="page" id="page-incidents">
+        <div class="kpi-grid">
+          <div class="kpi-card glassmorphism">
+            <div class="kpi-meta">
+              <span class="kpi-label">Active Incidents</span>
+              <div class="kpi-icon">🚨</div>
+            </div>
+            <div class="kpi-value" id="kpi-active-incidents">0</div>
+            <div class="kpi-trend" id="kpi-active-incidents-sub">Needs resolution</div>
+          </div>
+          <div class="kpi-card glassmorphism alarm">
+            <div class="kpi-meta">
+              <span class="kpi-label">SLA Breached</span>
+              <div class="kpi-icon">⚠️</div>
+            </div>
+            <div class="kpi-value" id="kpi-breached-incidents">0</div>
+            <div class="kpi-trend negative" id="kpi-breached-incidents-sub">Overdue tickets</div>
+          </div>
+          <div class="kpi-card glassmorphism">
+            <div class="kpi-meta">
+              <span class="kpi-label">Critical (P1) Issues</span>
+              <div class="kpi-icon">🔥</div>
+            </div>
+            <div class="kpi-value" id="kpi-p1-incidents">0</div>
+            <div class="kpi-trend" id="kpi-p1-incidents-sub">Under 2 hr SLA</div>
+          </div>
+          <div class="kpi-card glassmorphism">
+            <div class="kpi-meta">
+              <span class="kpi-label">My Assignments</span>
+              <div class="kpi-icon">👤</div>
+            </div>
+            <div class="kpi-value" id="kpi-my-incidents">0</div>
+            <div class="kpi-trend" id="kpi-my-incidents-sub">Assigned to you</div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <div class="filter-group">
+            <select id="incidentDeptFilter" class="filter-select">
+              <option value="">All Assignment Departments</option>
+              <option value="admin">Admin / System Desk</option>
+              <option value="sales_user">Sales Department</option>
+              <option value="purchase_user">Purchasing Department</option>
+              <option value="manufacturing_user">Manufacturing Floor</option>
+              <option value="inventory_manager">Inventory & Warehouse</option>
+            </select>
+            <select id="incidentPriorityFilter" class="filter-select">
+              <option value="">All Priority Levels</option>
+              <option value="P1">P1 - Critical</option>
+              <option value="P2">P2 - High</option>
+              <option value="P3">P3 - Moderate</option>
+              <option value="P4">P4 - Low</option>
+            </select>
+            <input type="text" id="incidentSearch" class="filter-input" placeholder="Search title, desc, ticket no..." />
+          </div>
+          <button class="btn btn-primary btn-add" id="btnCreateIncident">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Log Operational Issue</span>
+          </button>
+        </div>
+
+        <div class="table-card glassmorphism full">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="sticky-col col-shorttext">Ticket No</th>
+                  <th class="col-name">Incident Title</th>
+                  <th class="col-shorttext">Priority</th>
+                  <th class="col-type">Caller Dept</th>
+                  <th class="col-type">Assigned Group</th>
+                  <th class="col-name">Assigned Staff</th>
+                  <th class="col-type">Ticket State</th>
+                  <th class="col-longtext">SLA Tracker / Time Remaining</th>
+                  <th class="col-shorttext">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="incidentsTable"></tbody>
             </table>
           </div>
         </div>
@@ -552,15 +642,15 @@
       <input type="hidden" id="productId">
       <div class="form-group">
         <label for="pName">Product Name *</label>
-        <input type="text" id="pName" required placeholder="e.g. Teak Dining Chair">
+        <input type="text" id="pName" required placeholder="e.g. Premium Office Chair">
       </div>
       <div class="form-group">
         <label for="pSku">SKU Code *</label>
-        <input type="text" id="pSku" required placeholder="e.g. FG-TDC-002">
+        <input type="text" id="pSku" required placeholder="e.g. FG-OC-002">
       </div>
       <div class="form-group">
         <label for="pDescription">Product Description</label>
-        <textarea id="pDescription" placeholder="Materials, dimensions, care details..." rows="3"></textarea>
+        <textarea id="pDescription" placeholder="Specifications, dimensions, materials, notes..." rows="3"></textarea>
       </div>
       <div class="form-group">
         <label for="pType">Catalog Category *</label>
@@ -682,7 +772,7 @@
       <input type="hidden" id="partyId">
       <div class="form-group">
         <label for="ptName">Contact Name *</label>
-        <input type="text" id="ptName" required placeholder="e.g. Krishna Wood Suppliers">
+        <input type="text" id="ptName" required placeholder="e.g. Apex Industrial Supplies Ltd.">
       </div>
       <div class="form-group">
         <label>Account Role *</label>
@@ -693,34 +783,34 @@
       </div>
       <div class="form-group">
         <label for="ptGstin">GSTIN Identification</label>
-        <input type="text" id="ptGstin" placeholder="e.g. 24XYZAB5678G2H6">
+        <input type="text" id="ptGstin" placeholder="e.g. 27AABCU9603R1ZX">
       </div>
       <div class="form-row">
         <div class="form-group col">
           <label for="ptPhone">Phone Number</label>
-          <input type="text" id="ptPhone" placeholder="e.g. 9876543210">
+          <input type="text" id="ptPhone" placeholder="e.g. +91 98765 43210">
         </div>
         <div class="form-group col">
           <label for="ptEmail">Email Address</label>
-          <input type="email" id="ptEmail" placeholder="e.g. supply@krishnawood.com">
+          <input type="email" id="ptEmail" placeholder="e.g. procurement@supplier.com">
         </div>
       </div>
       <div class="form-group">
         <label for="ptAddress">Office Street Address</label>
-        <textarea id="ptAddress" placeholder="Plot No, Industrial Area, Street Name..." rows="2"></textarea>
+        <textarea id="ptAddress" placeholder="Street address, industrial area, block/plot no..." rows="2"></textarea>
       </div>
       <div class="form-row">
         <div class="form-group col">
           <label for="ptCity">City</label>
-          <input type="text" id="ptCity" placeholder="Surat">
+          <input type="text" id="ptCity" placeholder="City">
         </div>
         <div class="form-group col">
           <label for="ptState">State</label>
-          <input type="text" id="ptState" placeholder="Gujarat">
+          <input type="text" id="ptState" placeholder="State">
         </div>
         <div class="form-group col">
           <label for="ptPincode">Pincode</label>
-          <input type="text" id="ptPincode" placeholder="395001">
+          <input type="text" id="ptPincode" placeholder="Pincode">
         </div>
       </div>
       <div class="modal-footer">
@@ -988,7 +1078,7 @@
     <div class="modal-body">
       <div class="mo-info-banner">
         <div><strong>Order No:</strong> <span id="mfgBannerOrderNum">MO0001</span></div>
-        <div><strong>Furniture:</strong> <span id="mfgBannerProductName">Executive Wooden Table</span></div>
+        <div><strong>Product:</strong> <span id="mfgBannerProductName">—</span></div>
         <div><strong>Target Output:</strong> <span id="mfgBannerQty">5.00 units</span></div>
         <div><strong>Shopfloor Lead:</strong> <span id="mfgBannerLead">Arjun Patel</span></div>
       </div>
@@ -1013,7 +1103,7 @@
       <div class="form-row">
         <div class="form-group col">
           <label for="bomName">Specification Name *</label>
-          <input type="text" id="bomName" required placeholder="e.g. Standard Teak Coffee Table v1">
+          <input type="text" id="bomName" required placeholder="e.g. Standard Office Chair Assembly v1">
         </div>
         <div class="form-group col">
           <label for="bomProduct">Finished Good Product *</label>
@@ -1034,7 +1124,7 @@
       </div>
       <div class="form-group">
         <label for="bomNotes">Recipe Specifications / Build Notes</label>
-        <textarea id="bomNotes" placeholder="Assembly instructions, wood grain matching guidelines..." rows="2"></textarea>
+        <textarea id="bomNotes" placeholder="Assembly instructions, quality standards, notes..." rows="2"></textarea>
       </div>
 
       <div class="form-row" style="margin-top:20px; align-items: stretch; gap: 24px;">
@@ -1107,7 +1197,7 @@
       </div>
       <div class="form-group" id="uEmailGroup">
         <label for="uEmail">Work Email Address *</label>
-        <input type="email" id="uEmail" required placeholder="arjun@shivfurniture.com">
+        <input type="email" id="uEmail" required placeholder="employee@yourcompany.com">
       </div>
       <div class="form-group">
         <label for="uPassword" id="uPasswordLabel">Password *</label>
@@ -1138,11 +1228,169 @@
     </form>
   </div>
 
+  <!-- Elevate Privilege Modal -->
+  <div class="side-modal" id="modalElevateRole">
+    <div class="modal-header">
+      <h2>Privilege Elevation (Security Admin)</h2>
+      <button class="close-modal" onclick="closeModal('modalElevateRole')">&times;</button>
+    </div>
+    <form id="elevateForm" class="modal-body">
+      <div class="form-group">
+        <label>Authorized User</label>
+        <div class="read-only-text" id="elevateUserLabel">Admin Kumar</div>
+      </div>
+      <div class="form-group">
+        <label for="elevatePassword">Confirm Password *</label>
+        <input type="password" id="elevatePassword" required placeholder="Enter admin password to elevate">
+      </div>
+      <div class="alert alert-error" id="elevateErrorAlert" style="display: none;"></div>
+      <div class="help-text">
+        ⚠️ Elevated Mode grants temporary permission to alter system configurations, manage user permissions, and override SLAs. The session will automatically de-elevate on logout or inactivity. All elevated actions are logged in the security audit trail.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalElevateRole')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Elevate Session</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Create Incident Modal -->
+  <div class="side-modal" id="modalCreateIncident">
+    <div class="modal-header">
+      <h2>Log New Operational Incident</h2>
+      <button class="close-modal" onclick="closeModal('modalCreateIncident')">&times;</button>
+    </div>
+    <form id="createIncidentForm" class="modal-body">
+      <div class="form-group">
+        <label for="incTitle">Brief Issue Summary (Title) *</label>
+        <input type="text" id="incTitle" required placeholder="e.g. Timber stock count discrepancy in Bay 4">
+      </div>
+      <div class="form-group">
+        <label for="incDescription">Detailed Description / Symptoms</label>
+        <textarea id="incDescription" rows="4" placeholder="Detail the operational block, steps to reproduce, or vendor issues..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="incPriority">Severity Priority *</label>
+          <select id="incPriority" required>
+            <option value="P3">P3 - Moderate (24 hr SLA)</option>
+            <option value="P4">P4 - Low (72 hr SLA)</option>
+            <option value="P2">P2 - High (8 hr SLA)</option>
+            <option value="P1">P1 - Critical (2 hr SLA)</option>
+          </select>
+        </div>
+        <div class="form-group col">
+          <label for="incAssignedDept">Assign to Department (Group) *</label>
+          <select id="incAssignedDept" required>
+            <option value="inventory_manager">Inventory & Warehouse</option>
+            <option value="manufacturing_user">Manufacturing Floor</option>
+            <option value="purchase_user">Purchasing Department</option>
+            <option value="sales_user">Sales Department</option>
+            <option value="admin">Admin / System Desk</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalCreateIncident')">Discard</button>
+        <button type="submit" class="btn btn-primary">Submit Ticket</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Incident Detail Modal -->
+  <div class="side-modal wide" id="modalIncidentDetail">
+    <div class="modal-header">
+      <h2 id="incDetailNumber">Incident Details</h2>
+      <button class="close-modal" onclick="closeModal('modalIncidentDetail')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="mo-info-banner">
+        <div><strong>Title:</strong> <span id="incDetailTitle">Loading...</span></div>
+        <div><strong>SLA Due:</strong> <span id="incDetailSlaDue">Loading...</span></div>
+        <div><strong>Status:</strong> <span id="incDetailStatusBadge">New</span></div>
+        <div><strong>SLA State:</strong> <span id="incDetailSlaState">Active</span></div>
+      </div>
+
+      <div id="incDetailSlaBarWrapper">
+        <div class="sla-progress-wrap">
+          <span class="sla-timer" id="incDetailSlaTimer">0h 00m 00s</span>
+          <div class="sla-progress-bar">
+            <div class="sla-progress-fill" id="incDetailSlaProgressFill" style="width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Incident Description</label>
+        <div class="read-only-text" id="incDetailDescription" style="white-space: pre-wrap; min-height: 60px;">None</div>
+      </div>
+
+      <div class="modal-section-title">Ownership & Department Assignment</div>
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="incDetailReassignDept">Assigned Department (Group)</label>
+          <div style="display: flex; gap: 8px;">
+            <select id="incDetailReassignDept" style="flex: 1;">
+              <option value="admin">Admin / System Desk</option>
+              <option value="sales_user">Sales Department</option>
+              <option value="purchase_user">Purchasing Department</option>
+              <option value="manufacturing_user">Manufacturing Floor</option>
+              <option value="inventory_manager">Inventory & Warehouse</option>
+            </select>
+            <button type="button" class="btn btn-secondary btn-sm" id="btnIncDetailReassign">Reassign</button>
+          </div>
+        </div>
+        <div class="form-group col">
+          <label for="incDetailAssignee">Assignee User</label>
+          <select id="incDetailAssignee">
+            <option value="">-- Unassigned --</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="incDetailStatus">Update Ticket Status</label>
+          <select id="incDetailStatus">
+            <option value="New">New</option>
+            <option value="Assigned">Assigned</option>
+            <option value="In Progress">In Progress</option>
+            <option value="On Hold">On Hold</option>
+            <option value="Resolved">Resolved</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
+        <div class="form-group col" id="slaOverrideWrapper" style="display: none;">
+          <label for="incDetailOverrideSla">Security Admin SLA Override</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="datetime-local" id="incDetailOverrideSla" style="flex: 1;">
+            <button type="button" class="btn btn-danger btn-sm" id="btnIncOverrideSla">Override</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section-title">Incident Activity Stream (Audit & Communication)</div>
+      <div class="timeline-stream" id="incDetailTimeline">
+      </div>
+
+      <div class="update-box-wrapper">
+        <div class="update-toggle-row">
+          <button type="button" class="update-toggle-btn active type-comment" id="btnToggleComment" onclick="setTimelineUpdateType('comment')">Customer Comment</button>
+          <button type="button" class="update-toggle-btn type-worknote" id="btnToggleWorknote" onclick="setTimelineUpdateType('work_note')">Internal Work Note</button>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <textarea id="incDetailNewUpdateText" style="flex: 1;" rows="2" placeholder="Type a comment visible to callers..."></textarea>
+          <button type="button" class="btn btn-primary" id="btnIncPostUpdate" style="align-self: flex-end; height: 38px;">Post</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Loading Overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner-box">
       <div class="spinner"></div>
-      <div class="loading-text">Synchronizing Workspace Ledger...</div>
+      <div class="loading-text">Loading...</div>
     </div>
   </div>
 

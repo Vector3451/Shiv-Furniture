@@ -1,6 +1,7 @@
 // server.js — Mini ERP System — Full Express Application
 // Run: npm run dev
 
+require('./db/dns-override');
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -65,8 +66,13 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Session with PostgreSQL store
+const sessionStore = new pgSession({ pool, tableName: 'session', createTableIfMissing: true });
+sessionStore.on('error', (err) => {
+  console.error('Session store error:', err);
+});
+
 app.use(session({
-  store: new pgSession({ pool, tableName: 'session', createTableIfMissing: true }),
+  store: sessionStore,
   secret: process.env.SESSION_SECRET || 'mini-erp-secret',
   resave: false,
   saveUninitialized: false,
@@ -109,6 +115,69 @@ app.use('/api/inventory', require('./routes/inventory'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/incidents', require('./routes/incidents'));
+
+// Elevate Role Endpoints
+app.post('/api/auth/elevate', async (req, res) => {
+  if (!req.user && !req.session?.user) return res.status(401).json({ error: 'Not authenticated' });
+  try {
+    const user = req.user || req.session.user;
+    if (user.role !== 'admin') {
+      return res.status(403).json({ error: 'Only administrators can elevate their session privileges.' });
+    }
+    
+    const { password } = req.body;
+    if (!password) return res.status(400).json({ error: 'Password required' });
+
+    // Verify password
+    const result = await pool.query('SELECT password_hash FROM users WHERE id = $1', [user.id]);
+    if (!result.rows.length) return res.status(401).json({ error: 'Invalid user' });
+
+    const hash = result.rows[0].password_hash;
+    const valid = await bcrypt.compare(password, hash);
+    if (!valid) return res.status(401).json({ error: 'Invalid password' });
+
+    req.session.isElevated = true;
+    if (req.user) req.user.isElevated = true;
+
+    const { logAudit, getIp } = require('./middleware/auth');
+    await logAudit({
+      tableName: 'users',
+      recordId: user.id,
+      action: 'ACTION',
+      description: 'Elevated role to Security Admin',
+      userId: user.id,
+      ipAddress: getIp(req)
+    });
+
+    res.json({ ok: true, isElevated: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/auth/de-elevate', async (req, res) => {
+  if (!req.user && !req.session?.user) return res.status(401).json({ error: 'Not authenticated' });
+  try {
+    const user = req.user || req.session.user;
+    req.session.isElevated = false;
+    if (req.user) req.user.isElevated = false;
+
+    const { logAudit, getIp } = require('./middleware/auth');
+    await logAudit({
+      tableName: 'users',
+      recordId: user.id,
+      action: 'ACTION',
+      description: 'De-elevated role from Security Admin',
+      userId: user.id,
+      ipAddress: getIp(req)
+    });
+
+    res.json({ ok: true, isElevated: false });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // ── Work centers standalone ────────────────────────────────────────────────────
 const { isAuthenticated } = require('./middleware/auth');
@@ -138,6 +207,9 @@ app.get('/api/health', async (req, res) => {
 // ── Error handler ──────────────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
+  if (res.headersSent) {
+    return next(err);
+  }
   res.status(500).json({ error: 'Internal server error' });
 });
 

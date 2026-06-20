@@ -1,13 +1,32 @@
-// db/seed.js — Comprehensive seed data for Shiv Furniture ERP
+// db/seed.js — Comprehensive seed data for Generic B2B ERP
+require('./dns-override');
 require('dotenv').config();
 const { Client } = require('pg');
 const bcrypt = require('bcryptjs');
 
 async function seed() {
-  const client = new Client({ connectionString: process.env.DATABASE_URL });
+  console.log('🔌 Connecting to Neon PostgreSQL for seeding...');
+  let client;
+  let retries = 5;
+  while (retries > 0) {
+    try {
+      client = new Client({ 
+        connectionString: process.env.DATABASE_URL,
+        connectionTimeoutMillis: 15000 // 15s to handle Neon cold starts
+      });
+      await client.connect();
+      console.log('🔌 Connected to Neon Database. Seeding comprehensive demo data...\n');
+      break;
+    } catch (err) {
+      console.log(`⚠️ Connection attempt failed. Retries remaining: ${retries - 1}. Error: ${err.message}`);
+      retries--;
+      if (retries === 0) {
+        throw err;
+      }
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    }
+  }
   try {
-    await client.connect();
-    console.log('🔌 Connected to Neon Database. Seeding comprehensive demo data...\n');
 
     // ── 1. USERS ──────────────────────────────────────────────────────────────
     console.log('👤 Seeding users...');
@@ -16,14 +35,14 @@ async function seed() {
 
     const userRows = await client.query(`
       INSERT INTO users (login_id, email, password_hash, full_name, role) VALUES
-        ('ADM001', 'admin@shivfurniture.com', $1, 'Admin Kumar', 'admin'),
-        ('SAL001', 'sales@shivfurniture.com', $2, 'Priya Singh', 'sales_user'),
-        ('SAL002', 'sales2@shivfurniture.com', $2, 'Anil Sharma', 'sales_user'),
-        ('PUR001', 'purchase@shivfurniture.com', $2, 'Ravi Sharma', 'purchase_user'),
-        ('MFG001', 'manufacturing@shivfurniture.com', $2, 'Arjun Patel', 'manufacturing_user'),
-        ('MFG002', 'manufacturing2@shivfurniture.com', $2, 'Sanjay Dutt', 'manufacturing_user'),
-        ('INV001', 'inventory@shivfurniture.com', $2, 'Meera Joshi', 'inventory_manager'),
-        ('OWN001', 'owner@shivfurniture.com', $1, 'Shiv Agarwal', 'business_owner')
+        ('ADM001', 'admin@b2berp.com', $1, 'Admin Kumar', 'admin'),
+        ('SAL001', 'sales@b2berp.com', $2, 'Priya Singh', 'sales_user'),
+        ('SAL002', 'sales2@b2berp.com', $2, 'Anil Sharma', 'sales_user'),
+        ('PUR001', 'purchase@b2berp.com', $2, 'Ravi Sharma', 'purchase_user'),
+        ('MFG001', 'manufacturing@b2berp.com', $2, 'Arjun Patel', 'manufacturing_user'),
+        ('MFG002', 'manufacturing2@b2berp.com', $2, 'Sanjay Dutt', 'manufacturing_user'),
+        ('INV001', 'inventory@b2berp.com', $2, 'Meera Joshi', 'inventory_manager'),
+        ('OWN001', 'owner@b2berp.com', $1, 'Alex Carter', 'business_owner')
       ON CONFLICT (email) DO NOTHING RETURNING id, login_id, role
     `, [adminHash, userHash]);
     console.log(`✓ Users created.`);
@@ -606,12 +625,12 @@ async function seed() {
 
     console.log('\n🌟 Database seeded successfully with a robust enterprise dataset!');
     console.log('🔑 Operational Login Credentials:');
-    console.log('   Admin Lead:     admin@shivfurniture.com / admin123');
-    console.log('   Sales Head:     sales@shivfurniture.com / user123');
-    console.log('   Purchasing Rep: purchase@shivfurniture.com / user123');
-    console.log('   Shopfloor Mgr:  manufacturing@shivfurniture.com / user123');
-    console.log('   Inventory Lead: inventory@shivfurniture.com / user123');
-    console.log('   Executive Owner: owner@shivfurniture.com / admin123\n');
+    console.log('   Admin Lead:     admin@b2berp.com / admin123');
+    console.log('   Sales Head:     sales@b2berp.com / user123');
+    console.log('   Purchasing Rep: purchase@b2berp.com / user123');
+    console.log('   Shopfloor Mgr:  manufacturing@b2berp.com / user123');
+    console.log('   Inventory Lead: inventory@b2berp.com / user123');
+    console.log('   Executive Owner: owner@b2berp.com / admin123\n');
 
   } catch (err) {
     console.error('❌ Database seeding error:', err.message);
