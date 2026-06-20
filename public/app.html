@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shiv Furniture Works — Enterprise ERP</title>
+  <meta name="description" content="End-to-end cloud ERP for Shiv Furniture Works — digitalizing inventory, manufacturing, sales, procurement and payments." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- ── Main App Layout ─────────────────────────────────────────────────────── -->
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">SF</div>
+          <div class="logo-text">
+            <span class="logo-name">Shiv Furniture</span>
+            <span class="logo-sub">Enterprise Suite</span>
+          </div>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+
+      <nav class="nav" id="nav">
+        <a class="nav-item active" data-page="dashboard" href="#" id="nav-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" data-page="products" href="#" id="nav-products">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+          <span>Catalog & Stock</span>
+        </a>
+        <a class="nav-item" data-page="parties" href="#" id="nav-parties">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          <span>Customers & Vendors</span>
+        </a>
+        <a class="nav-item" data-page="sales" href="#" id="nav-sales">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          <span>Sales Orders</span>
+        </a>
+        <a class="nav-item" data-page="purchases" href="#" id="nav-purchases">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+          <span>Procurements</span>
+        </a>
+        <a class="nav-item" data-page="manufacturing" href="#" id="nav-manufacturing">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>Manufacturing</span>
+        </a>
+        <a class="nav-item" data-page="inventory" href="#" id="nav-inventory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          <span>Stock Ledger</span>
+        </a>
+        <a class="nav-item" data-page="boms" href="#" id="nav-boms">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Bill of Materials</span>
+        </a>
+        <a class="nav-item" data-page="users" href="#" id="nav-users">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>User Access</span>
+        </a>
+        <a class="nav-item" data-page="audit" href="#" id="nav-audit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Audit Trail</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-block">
+          <img id="userAvatar" src="" alt="Avatar" class="avatar-img" style="display:none;">
+          <div class="user-avatar-placeholder" id="userAvatarPlaceholder">U</div>
+          <div class="user-info">
+            <span class="user-name" id="profileName">Loading User</span>
+            <span class="user-role" id="profileRole">Loading Role</span>
+          </div>
+          <button class="logout-btn" id="logoutBtn" title="Logout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main" id="main">
+      
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left" style="display: flex; align-items: center; gap: 16px;">
+          <button class="mobile-toggle" id="mobileToggle" aria-label="Open navigation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <div>
+            <h1 class="page-title" id="pageTitle">Dashboard</h1>
+            <div class="breadcrumbs">Shiv Furniture Suite &nbsp;/&nbsp; <span id="breadcrumbCurrent">Overview</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="globalSearch" placeholder="Quick search SKU, product, order..." />
+          </div>
+          <button class="refresh-btn" id="refreshBtn" title="Reload Dashboard Data">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- ── PAGE: Dashboard ────────────────────────────────────────────────── -->
+      <section class="page active" id="page-dashboard">
+        <div class="kpi-grid">
+          <div class="kpi-card glassmorphism accent-lilac">
+            <div class="kpi-meta">
+              <span class="kpi-label">Workplace Revenue</span>
+              <div class="kpi-icon">₹</div>
+            </div>
+            <div class="kpi-value" id="kpi-revenue">₹0.00</div>
+            <div class="kpi-trend positive" id="kpi-revenue-sub">0 Confirmed Sales</div>
+          </div>
+          <div class="kpi-card glassmorphism">
+            <div class="kpi-meta">
+              <span class="kpi-label">Sales Orders</span>
+              <div class="kpi-icon">📊</div>
+            </div>
+            <div class="kpi-value" id="kpi-sales">0</div>
+            <div class="kpi-trend" id="kpi-sales-sub">0 Delivered</div>
+          </div>
+          <div class="kpi-card glassmorphism">
+            <div class="kpi-meta">
+              <span class="kpi-label">Purchase Orders</span>
+              <div class="kpi-icon">🛒</div>
+            </div>
+            <div class="kpi-value" id="kpi-purchases">0</div>
+            <div class="kpi-trend" id="kpi-purchases-sub">0 Received</div>
+          </div>
+          <div class="kpi-card glassmorphism">
+            <div class="kpi-meta">
+              <span class="kpi-label">Manufacturing Orders</span>
+              <div class="kpi-icon">🏭</div>
+            </div>
+            <div class="kpi-value" id="kpi-mfg">0</div>
+            <div class="kpi-trend" id="kpi-mfg-sub">0 In Progress</div>
+          </div>
+          <div class="kpi-card glassmorphism">
+            <div class="kpi-meta">
+              <span class="kpi-label">Products Active</span>
+              <div class="kpi-icon">🏷️</div>
+            </div>
+            <div class="kpi-value" id="kpi-products">0</div>
+            <div class="kpi-trend" id="kpi-products-sub">0 in catalog</div>
+          </div>
+          <div class="kpi-card glassmorphism alarm">
+            <div class="kpi-meta">
+              <span class="kpi-label">Low Stock Warnings</span>
+              <div class="kpi-icon">⚠️</div>
+            </div>
+            <div class="kpi-value" id="kpi-lowstock">0</div>
+            <div class="kpi-trend negative" id="kpi-lowstock-sub">Needs attention</div>
+          </div>
+        </div>
+
+        <div class="charts-row">
+          <div class="chart-card glassmorphism">
+            <div class="chart-header">
+              <h3>Monthly Sales Revenue Trend</h3>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="salesChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card glassmorphism">
+            <div class="chart-header">
+              <h3>Manufacturing Operations Status</h3>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="moChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-row">
+          <div class="table-card glassmorphism">
+            <div class="card-header">
+              <h3>Recent Confirmed / Pending Sales</h3>
+              <button class="btn btn-secondary btn-sm" onclick="navigateTo('sales')">View All Sales</button>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Customer Name</th>
+                    <th>Gross Total</th>
+                    <th>Status</th>
+                    <th>Expected Delivery</th>
+                  </tr>
+                </thead>
+                <tbody id="recentSales"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="table-card glassmorphism pie-distribution-card">
+            <div class="chart-header">
+              <h3>Catalog Product Types</h3>
+            </div>
+            <div class="chart-wrapper pie-wrapper">
+              <canvas id="productChart"></canvas>
+            </div>
+            <div id="productLegend" class="chart-legend"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PAGE: Products Catalog ────────────────────────────────────────── -->
+      <section class="page" id="page-products">
+        <div class="action-bar">
+          <div class="filter-group">
+            <select id="productTypeFilter" class="filter-select">
+              <option value="">All Catalog Categories</option>
+              <option value="raw_material">Raw Materials</option>
+              <option value="component">Sub-Components</option>
+              <option value="finished_good">Finished Goods</option>
+            </select>
+            <input type="text" id="productSearch" class="filter-input" placeholder="Search sku, name, description..." />
+          </div>
+          <button class="btn btn-primary btn-add" id="btnAddProduct">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Add New Product</span>
+          </button>
+        </div>
+        <div class="table-card glassmorphism full">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Product Details</th>
+                  <th>Type</th>
+                  <th>Sales Price</th>
+                  <th>Cost Price</th>
+                  <th>On Hand</th>
+                  <th>Reserved</th>
+                  <th>Free Stock</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="productsTable"></tbody>
+            </table>
+          </div>
+          <div class="results-count" id="productsCount"></div>
+        </div>
+      </section>
+
+      <!-- ── PAGE: Customers & Vendors ────────────────────────────────────── -->
+      <section class="page" id="page-parties">
+        <div class="action-bar">
+          <div class="filter-group">
+            <select id="partyRoleFilter" class="filter-select">
+              <option value="">All Customer & Vendor Accounts</option>
+              <option value="vendor">Vendors Only</option>
+              <option value="customer">Customers Only</option>
+            </select>
+            <input type="text" id="partySearch" class="filter-input" placeholder="Search name, phone, code..." />
+          </div>
+          <button class="btn btn-primary btn-add" id="btnAddParty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Add Contact Account</span>
+          </button>
+        </div>
+        <div class="table-card glassmorphism full">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Account Name</th>
+                  <th>Type Badge</th>
+                  <th>GST Number</th>
+                  <th>Phone Number</th>
+                  <th>Email Address</th>
+                  <th>Office Address</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="partiesTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PAGE: Sales Orders ────────────────────────────────────────────── -->
+      <section class="page" id="page-sales">
+        <div class="action-bar">
+          <div class="filter-group">
+            <select id="soStatusFilter" class="filter-select">
+              <option value="">All Sales Statuses</option>
+              <option value="draft">Draft Orders</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="payment_pending">Payment Pending</option>
+              <option value="payment_done">Paid</option>
+              <option value="partially_delivered">Partially Delivered</option>
+              <option value="fully_delivered">Fully Dispatched</option>
+              <option value="cancelled">Cancelled Orders</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-add" id="btnCreateSalesOrder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Create Sales Order</span>
+          </button>
+        </div>
+        <div class="table-card glassmorphism full">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order No.</th>
+                  <th>Customer Client</th>
+                  <th>Total Items</th>
+                  <th>Grand Total</th>
+                  <th>Date Placed</th>
+                  <th>Expected Dispatch</th>
+                  <th>Payment State</th>
+                  <th>Order State</th>
+                  <th style="width:250px;">Process Controls</th>
+                </tr>
+              </thead>
+              <tbody id="salesTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PAGE: Purchase Orders ─────────────────────────────────────────── -->
+      <section class="page" id="page-purchases">
+        <div class="action-bar">
+          <div class="filter-group">
+            <select id="poStatusFilter" class="filter-select">
+              <option value="">All Purchase Statuses</option>
+              <option value="draft">Draft</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="partially_received">Partially Received</option>
+              <option value="fully_received">Fully Received</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-add" id="btnCreatePurchaseOrder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Create Purchase Order</span>
+          </button>
+        </div>
+        <div class="table-card glassmorphism full">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order No.</th>
+                  <th>Vendor Supplier</th>
+                  <th>Items</th>
+                  <th>Total Amount</th>
+                  <th>Order Date</th>
+                  <th>Expected Delivery</th>
+                  <th>Status</th>
+                  <th style="width:180px;">Goods Control</th>
+                </tr>
+              </thead>
+              <tbody id="purchasesTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PAGE: Manufacturing ───────────────────────────────────────────── -->
+      <section class="page" id="page-manufacturing">
+        <div class="action-bar">
+          <div class="filter-group">
+            <select id="moStatusFilter" class="filter-select">
+              <option value="">All Manufacturing Statuses</option>
+              <option value="draft">Draft Production</option>
+              <option value="confirmed">Confirmed / Materials Blocked</option>
+              <option value="in_progress">Active in Shop Floor</option>
+              <option value="partially_produced">Partially Produced</option>
+              <option value="completed">Completed Production</option>
+              <option value="cancelled">Cancelled Orders</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-add" id="btnCreateMfgOrder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Add Manufacturing Order</span>
+          </button>
+        </div>
+        <div class="table-card glassmorphism full">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>MO Code</th>
+                  <th>Furniture Item</th>
+                  <th>BoM Spec</th>
+                  <th>Target Qty</th>
+                  <th>Completed Qty</th>
+                  <th>Completion Progress</th>
+                  <th>Priority</th>
+                  <th>Shop floor Status</th>
+                  <th style="width:280px;">Production Control</th>
+                </tr>
+              </thead>
+              <tbody id="mfgTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PAGE: Stock Movement Ledger ────────────────────────────────────── -->
+      <section class="page" id="page-inventory">
+        <div class="action-bar">
+          <div class="filter-group">
+            <select id="movTypeFilter" class="filter-select">
+              <option value="">All Movement Types</option>
+              <option value="opening">Opening Stock Balances</option>
+              <option value="purchase">Purchase Goods Receipts</option>
+              <option value="sale">Sales Deliveries</option>
+              <option value="manufacturing_in">Manufacturing Inward (Finished Goods)</option>
+              <option value="manufacturing_out">Manufacturing Consumption (Raw Materials)</option>
+              <option value="adjustment">Manual Ledger Adjustments</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-card glassmorphism full">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Product Details</th>
+                  <th>SKU</th>
+                  <th>Transaction Category</th>
+                  <th>Reference Voucher</th>
+                  <th>Qty Delta</th>
+                  <th>Cost Basis</th>
+                  <th>Ledger Running Balance</th>
+                  <th>Authorized By</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PAGE: Bill of Materials (BoM) ─────────────────────────────────── -->
+      <section class="page" id="page-boms">
+        <div class="action-bar">
+          <div class="filter-group">
+            <input type="text" id="bomSearch" class="filter-input" placeholder="Search BoM recipe name..." style="display:none;" />
+          </div>
+          <button class="btn btn-primary btn-add" id="btnCreateBom">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Create Bill of Materials</span>
+          </button>
+        </div>
+        <div class="table-card glassmorphism full">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Recipe Specification Name</th>
+                  <th>Finished Product</th>
+                  <th>Product SKU</th>
+                  <th>Revision Version</th>
+                  <th>Components Required</th>
+                  <th>Assembly Operations</th>
+                  <th>Active Status</th>
+                  <th>Date Drafted</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="bomsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PAGE: Users & Administration ──────────────────────────────────── -->
+      <section class="page" id="page-users">
+        <div class="action-bar">
+          <button class="btn btn-primary btn-add" id="btnCreateUser">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Register Corporate User</span>
+          </button>
+        </div>
+        <div class="table-card glassmorphism full">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Login ID</th>
+                  <th>Employee Name</th>
+                  <th>Corporate Role</th>
+                  <th>Work Email</th>
+                  <th>Access Rights</th>
+                  <th>Account Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PAGE: System Audit Trail ──────────────────────────────────────── -->
+      <section class="page" id="page-audit">
+        <div class="table-card glassmorphism full">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Entity Log Table</th>
+                  <th>Record Reference ID</th>
+                  <th>Operation Action</th>
+                  <th>System User</th>
+                  <th>Device IP Address</th>
+                  <th>Activity Description</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody id="auditTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ── 12. SLIDE-OUT MODAL DIALOGS (RIGHT HAND SIDE PANEL) ───────────────── -->
+  <div class="modal-overlay" id="modalOverlay"></div>
+
+  <!-- Product Create/Edit Modal -->
+  <div class="side-modal" id="modalProduct">
+    <div class="modal-header">
+      <h2 id="modalProductTitle">New Catalog Product</h2>
+      <button class="close-modal" onclick="closeModal('modalProduct')">&times;</button>
+    </div>
+    <form id="productForm" class="modal-body">
+      <input type="hidden" id="productId">
+      <div class="form-group">
+        <label for="pName">Product Name *</label>
+        <input type="text" id="pName" required placeholder="e.g. Teak Dining Chair">
+      </div>
+      <div class="form-group">
+        <label for="pSku">SKU Code *</label>
+        <input type="text" id="pSku" required placeholder="e.g. FG-TDC-002">
+      </div>
+      <div class="form-group">
+        <label for="pDescription">Product Description</label>
+        <textarea id="pDescription" placeholder="Materials, dimensions, care details..." rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="pType">Catalog Category *</label>
+        <select id="pType" required>
+          <option value="finished_good">Finished Good</option>
+          <option value="raw_material">Raw Material</option>
+          <option value="component">Sub-Component</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="pSalesPrice">Sales Price (INR)</label>
+          <input type="number" id="pSalesPrice" min="0" step="0.01" value="0.00">
+        </div>
+        <div class="form-group col">
+          <label for="pCostPrice">Cost Basis (INR)</label>
+          <input type="number" id="pCostPrice" min="0" step="0.01" value="0.00">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="pUom">Unit of Measure</label>
+          <input type="text" id="pUom" value="pieces" placeholder="e.g. pieces, kg, meters">
+        </div>
+        <div class="form-group col">
+          <label for="pMinStock">Min Alert Stock</label>
+          <input type="number" id="pMinStock" min="0" value="5">
+        </div>
+      </div>
+      
+      <!-- Procurement configurations -->
+      <div class="modal-section-title">Procurement Automation Logic</div>
+      
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="procStrategy">Procurement strategy</label>
+          <select id="procStrategy">
+            <option value="MTS">MTS (Make-to-Stock)</option>
+            <option value="MTO">MTO (Make-to-Order)</option>
+          </select>
+        </div>
+        <div class="form-group col">
+          <label for="procType">Supply Type</label>
+          <select id="procType">
+            <option value="purchase">Purchase (Vendor supplied)</option>
+            <option value="manufacturing">Manufacturing (BoM required)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="procVendor">Supplier Vendor (For Purchase Supply)</label>
+        <select id="procVendor">
+          <option value="">-- Select Vendor Account --</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="procLeadTime">Lead Time (Days)</label>
+          <input type="number" id="procLeadTime" min="0" value="7">
+        </div>
+        <div class="form-group col">
+          <label for="procMinOrder">Min Order Qty</label>
+          <input type="number" id="procMinOrder" min="1" value="1">
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalProduct')">Discard</button>
+        <button type="submit" class="btn btn-primary">Save Product</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Manual Stock Adjustment Modal -->
+  <div class="side-modal" id="modalAdjustment">
+    <div class="modal-header">
+      <h2>Manual Stock Ledger Adjustment</h2>
+      <button class="close-modal" onclick="closeModal('modalAdjustment')">&times;</button>
+    </div>
+    <form id="adjustmentForm" class="modal-body">
+      <input type="hidden" id="adjProductId">
+      <div class="form-group">
+        <label>Adjusting Stock For</label>
+        <div class="read-only-text" id="adjProductName">Teak Wood Planks (RM-TWP-001)</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col">
+          <label>Current On Hand</label>
+          <div class="read-only-text" id="adjCurrentQty">0.00</div>
+        </div>
+        <div class="form-group col">
+          <label for="adjNewQty">Adjusted Quantity Delta *</label>
+          <input type="number" id="adjNewQty" step="0.01" required placeholder="e.g. +20 or -15">
+          <span class="help-text">Use positive values to add stock, negative values to scrap stock.</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="adjCost">Actual Unit Cost (INR)</label>
+        <input type="number" id="adjCost" min="0" step="0.01" placeholder="Optional unit cost override">
+      </div>
+      <div class="form-group">
+        <label for="adjNotes">Reason for Adjustment *</label>
+        <textarea id="adjNotes" required placeholder="e.g. Stock count variance reconciliation, material damaged during storage..." rows="3"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalAdjustment')">Discard</button>
+        <button type="submit" class="btn btn-primary">Adjust Stock</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Contact/Party Create/Edit Modal -->
+  <div class="side-modal" id="modalParty">
+    <div class="modal-header">
+      <h2 id="modalPartyTitle">New Contact Account</h2>
+      <button class="close-modal" onclick="closeModal('modalParty')">&times;</button>
+    </div>
+    <form id="partyForm" class="modal-body">
+      <input type="hidden" id="partyId">
+      <div class="form-group">
+        <label for="ptName">Contact Name *</label>
+        <input type="text" id="ptName" required placeholder="e.g. Krishna Wood Suppliers">
+      </div>
+      <div class="form-group">
+        <label>Account Role *</label>
+        <div class="radio-checkbox-row">
+          <label class="check-label"><input type="checkbox" id="ptIsCustomer" value="1"> Customer</label>
+          <label class="check-label"><input type="checkbox" id="ptIsVendor" value="1"> Supplier Vendor</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="ptGstin">GSTIN Identification</label>
+        <input type="text" id="ptGstin" placeholder="e.g. 24XYZAB5678G2H6">
+      </div>
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="ptPhone">Phone Number</label>
+          <input type="text" id="ptPhone" placeholder="e.g. 9876543210">
+        </div>
+        <div class="form-group col">
+          <label for="ptEmail">Email Address</label>
+          <input type="email" id="ptEmail" placeholder="e.g. supply@krishnawood.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="ptAddress">Office Street Address</label>
+        <textarea id="ptAddress" placeholder="Plot No, Industrial Area, Street Name..." rows="2"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="ptCity">City</label>
+          <input type="text" id="ptCity" placeholder="Surat">
+        </div>
+        <div class="form-group col">
+          <label for="ptState">State</label>
+          <input type="text" id="ptState" placeholder="Gujarat">
+        </div>
+        <div class="form-group col">
+          <label for="ptPincode">Pincode</label>
+          <input type="text" id="ptPincode" placeholder="395001">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalParty')">Discard</button>
+        <button type="submit" class="btn btn-primary">Save Contact</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Create Sales Order Modal -->
+  <div class="side-modal wide" id="modalSalesOrder">
+    <div class="modal-header">
+      <h2>Draft Sales Order Voucher</h2>
+      <button class="close-modal" onclick="closeModal('modalSalesOrder')">&times;</button>
+    </div>
+    <form id="salesOrderForm" class="modal-body">
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="soCustomer">Customer Client *</label>
+          <select id="soCustomer" required>
+            <option value="">-- Select Customer Account --</option>
+          </select>
+        </div>
+        <div class="form-group col">
+          <label for="soDeliveryDate">Expected Delivery Date *</label>
+          <input type="date" id="soDeliveryDate" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="soAddress">Shipping Address</label>
+          <textarea id="soAddress" placeholder="Delivery site address details..." rows="2"></textarea>
+        </div>
+        <div class="form-group col">
+          <label for="soNotes">Internal Order Notes</label>
+          <textarea id="soNotes" placeholder="Special requirements, specifications..." rows="2"></textarea>
+        </div>
+      </div>
+
+      <!-- Line Items Section -->
+      <div class="line-items-wrapper">
+        <div class="line-items-header">
+          <h3>Voucher Line Items</h3>
+          <button type="button" class="btn btn-secondary btn-sm" id="btnSoAddLine">Add Item Row</button>
+        </div>
+        <table class="line-items-table">
+          <thead>
+            <tr>
+              <th>Select Finished Product</th>
+              <th style="width:120px;">Qty Required</th>
+              <th style="width:160px;">Unit Price (INR)</th>
+              <th style="width:150px;">Line Total</th>
+              <th style="width:60px;"></th>
+            </tr>
+          </thead>
+          <tbody id="soLineRows">
+            <!-- Dynamically populated rows -->
+          </tbody>
+        </table>
+        <div class="order-total-bar">
+          <span>Gross Estimated Total:</span>
+          <span id="soEstimatedTotal">₹0.00</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalSalesOrder')">Discard</button>
+        <button type="submit" class="btn btn-primary">Draft Order</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Create Purchase Order Modal -->
+  <div class="side-modal wide" id="modalPurchaseOrder">
+    <div class="modal-header">
+      <h2>Draft Purchase Order Voucher</h2>
+      <button class="close-modal" onclick="closeModal('modalPurchaseOrder')">&times;</button>
+    </div>
+    <form id="purchaseOrderForm" class="modal-body">
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="poVendor">Supplier Vendor *</label>
+          <select id="poVendor" required>
+            <option value="">-- Select Vendor Account --</option>
+          </select>
+        </div>
+        <div class="form-group col">
+          <label for="poReceiptDate">Expected Receipt Date *</label>
+          <input type="date" id="poReceiptDate" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="poNotes">Internal Procurement Notes</label>
+        <textarea id="poNotes" placeholder="Purchase notes or instructions..." rows="2"></textarea>
+      </div>
+
+      <!-- Line Items Section -->
+      <div class="line-items-wrapper">
+        <div class="line-items-header">
+          <h3>Voucher Line Items</h3>
+          <button type="button" class="btn btn-secondary btn-sm" id="btnPoAddLine">Add Item Row</button>
+        </div>
+        <table class="line-items-table">
+          <thead>
+            <tr>
+              <th>Select Raw Material / Component</th>
+              <th style="width:120px;">Qty Ordered</th>
+              <th style="width:160px;">Purchase Cost (INR)</th>
+              <th style="width:150px;">Line Total</th>
+              <th style="width:60px;"></th>
+            </tr>
+          </thead>
+          <tbody id="poLineRows">
+            <!-- Dynamically populated rows -->
+          </tbody>
+        </table>
+        <div class="order-total-bar">
+          <span>Gross Estimated Total:</span>
+          <span id="poEstimatedTotal">₹0.00</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalPurchaseOrder')">Discard</button>
+        <button type="submit" class="btn btn-primary">Draft Order</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Create Manufacturing Order Modal -->
+  <div class="side-modal" id="modalMfgOrder">
+    <div class="modal-header">
+      <h2>Manufacturing Order Setup</h2>
+      <button class="close-modal" onclick="closeModal('modalMfgOrder')">&times;</button>
+    </div>
+    <form id="mfgOrderForm" class="modal-body">
+      <div class="form-group">
+        <label for="moProduct">Finished Good Product *</label>
+        <select id="moProduct" required>
+          <option value="">-- Select Finished Product --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="moBom">Bill of Materials Spec *</label>
+        <select id="moBom" required>
+          <option value="">-- Select Active BoM Recipe --</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="moQty">Planned Output Qty *</label>
+          <input type="number" id="moQty" min="1" step="0.01" required value="1">
+        </div>
+        <div class="form-group col">
+          <label for="moPriority">Schedule Priority</label>
+          <select id="moPriority">
+            <option value="normal">Normal Priority</option>
+            <option value="low">Low Priority</option>
+            <option value="high">High Priority</option>
+            <option value="urgent">Urgent Priority</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="moPlannedStart">Planned Production Start</label>
+          <input type="datetime-local" id="moPlannedStart">
+        </div>
+        <div class="form-group col">
+          <label for="moPlannedEnd">Expected Production Completion</label>
+          <input type="datetime-local" id="moPlannedEnd">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="moAssignee">Assign Shop floor Lead</label>
+        <select id="moAssignee">
+          <option value="">-- Select Employee Lead --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="moNotes">Shop floor Routing Notes</label>
+        <textarea id="moNotes" placeholder="Special design or quality requirements..." rows="2"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalMfgOrder')">Discard</button>
+        <button type="submit" class="btn btn-primary">Create Production Order</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Goods Receipt Modal (PO Receive) -->
+  <div class="side-modal" id="modalPoReceive">
+    <div class="modal-header">
+      <h2>Inward Goods Receipt (GRN)</h2>
+      <button class="close-modal" onclick="closeModal('modalPoReceive')">&times;</button>
+    </div>
+    <form id="poReceiveForm" class="modal-body">
+      <input type="hidden" id="recPoId">
+      <div class="form-group">
+        <label>Receiving Shipment For</label>
+        <div class="read-only-text" id="recOrderNum">PO0001</div>
+      </div>
+      <div class="line-items-wrapper">
+        <table class="line-items-table slim">
+          <thead>
+            <tr>
+              <th>Raw Material / SKU</th>
+              <th style="width:80px;">Ordered</th>
+              <th style="width:80px;">Received</th>
+              <th style="width:110px;">Inward Qty *</th>
+            </tr>
+          </thead>
+          <tbody id="recLineRows">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer" style="margin-top:20px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalPoReceive')">Discard</button>
+        <button type="submit" class="btn btn-primary">Process Inward Receipt</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Outward Delivery Modal (SO Dispatch) -->
+  <div class="side-modal" id="modalSoDeliver">
+    <div class="modal-header">
+      <h2>Outward Dispatch & Delivery</h2>
+      <button class="close-modal" onclick="closeModal('modalSoDeliver')">&times;</button>
+    </div>
+    <form id="soDeliverForm" class="modal-body">
+      <input type="hidden" id="delSoId">
+      <div class="form-group">
+        <label>Dispatching Order Shipment</label>
+        <div class="read-only-text" id="delOrderNum">SO0001</div>
+      </div>
+      <div class="line-items-wrapper">
+        <table class="line-items-table slim">
+          <thead>
+            <tr>
+              <th>Finished Good / SKU</th>
+              <th style="width:80px;">Ordered</th>
+              <th style="width:80px;">Delivered</th>
+              <th style="width:110px;">Dispatch Qty *</th>
+            </tr>
+          </thead>
+          <tbody id="delLineRows">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer" style="margin-top:20px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalSoDeliver')">Discard</button>
+        <button type="submit" class="btn btn-primary">Process Dispatch Delivery</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Manufacturing Work Orders / Operations Modal -->
+  <div class="side-modal wide" id="modalMoOperations">
+    <div class="modal-header">
+      <h2>Routing Operations Control</h2>
+      <button class="close-modal" onclick="closeModal('modalMoOperations')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="mo-info-banner">
+        <div><strong>Order No:</strong> <span id="mfgBannerOrderNum">MO0001</span></div>
+        <div><strong>Furniture:</strong> <span id="mfgBannerProductName">Executive Wooden Table</span></div>
+        <div><strong>Target Output:</strong> <span id="mfgBannerQty">5.00 units</span></div>
+        <div><strong>Shopfloor Lead:</strong> <span id="mfgBannerLead">Arjun Patel</span></div>
+      </div>
+
+      <div class="modal-section-title" style="margin-top:24px;">Routing Operations & Station Stages</div>
+      <div class="operations-grid" id="moOperationsGrid">
+        <!-- Dynamically generated list of operations -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('modalMoOperations')">Close Routing</button>
+    </div>
+  </div>
+
+  <!-- Bill of Materials Create/Edit Modal -->
+  <div class="side-modal wide" id="modalBom">
+    <div class="modal-header">
+      <h2>Draft Bill of Materials Recipe</h2>
+      <button class="close-modal" onclick="closeModal('modalBom')">&times;</button>
+    </div>
+    <form id="bomForm" class="modal-body">
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="bomName">Specification Name *</label>
+          <input type="text" id="bomName" required placeholder="e.g. Standard Teak Coffee Table v1">
+        </div>
+        <div class="form-group col">
+          <label for="bomProduct">Finished Good Product *</label>
+          <select id="bomProduct" required>
+            <option value="">-- Select Finished Product --</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="bomVersion">Recipe Version *</label>
+          <input type="number" id="bomVersion" required value="1" min="1">
+        </div>
+        <div class="form-group col">
+          <label for="bomQty">Yield Quantity *</label>
+          <input type="number" id="bomQty" required value="1" min="1" step="0.01">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="bomNotes">Recipe Specifications / Build Notes</label>
+        <textarea id="bomNotes" placeholder="Assembly instructions, wood grain matching guidelines..." rows="2"></textarea>
+      </div>
+
+      <div class="form-row" style="margin-top:20px; align-items: stretch; gap: 24px;">
+        
+        <!-- Left: Components list -->
+        <div class="form-group col" style="flex: 1.2;">
+          <div class="line-items-header">
+            <h3>Required Components / Materials</h3>
+            <button type="button" class="btn btn-secondary btn-sm" id="btnBomAddComponent">Add Component</button>
+          </div>
+          <table class="line-items-table slim">
+            <thead>
+              <tr>
+                <th>Component Product</th>
+                <th style="width:120px;">Qty Required</th>
+                <th style="width:50px;"></th>
+              </tr>
+            </thead>
+            <tbody id="bomComponentRows">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Right: Routing Operations list -->
+        <div class="form-group col" style="flex: 1.3;">
+          <div class="line-items-header">
+            <h3>Routing Assembly Operations</h3>
+            <button type="button" class="btn btn-secondary btn-sm" id="btnBomAddOperation">Add Operation</button>
+          </div>
+          <table class="line-items-table slim">
+            <thead>
+              <tr>
+                <th>Operation Name</th>
+                <th style="width:150px;">Work Center</th>
+                <th style="width:90px;">Minutes</th>
+                <th style="width:50px;"></th>
+              </tr>
+            </thead>
+            <tbody id="bomOperationRows">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <div class="modal-footer" style="margin-top:30px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalBom')">Discard</button>
+        <button type="submit" class="btn btn-primary">Draft Recipe BOM</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- User Creation Modal -->
+  <div class="side-modal" id="modalUser">
+    <div class="modal-header">
+      <h2 id="modalUserTitle">Register Corporate User Account</h2>
+      <button class="close-modal" onclick="closeModal('modalUser')">&times;</button>
+    </div>
+    <form id="userForm" class="modal-body">
+      <input type="hidden" id="uId">
+      <div class="form-group">
+        <label for="uLoginId">Unique Login ID *</label>
+        <input type="text" id="uLoginId" required placeholder="e.g. EMP002 (Max 12 chars)">
+      </div>
+      <div class="form-group">
+        <label for="uFullName">Employee Full Name *</label>
+        <input type="text" id="uFullName" required placeholder="Arjun Patel">
+      </div>
+      <div class="form-group" id="uEmailGroup">
+        <label for="uEmail">Work Email Address *</label>
+        <input type="email" id="uEmail" required placeholder="arjun@shivfurniture.com">
+      </div>
+      <div class="form-group">
+        <label for="uPassword" id="uPasswordLabel">Password *</label>
+        <input type="password" id="uPassword" required placeholder="Security login password">
+      </div>
+      <div class="form-group">
+        <label for="uRole">Corporate System Role *</label>
+        <select id="uRole" required>
+          <option value="sales_user">Sales Executive</option>
+          <option value="purchase_user">Procurement Officer</option>
+          <option value="manufacturing_user">Shop floor Manager</option>
+          <option value="inventory_manager">Warehouse / Inventory Manager</option>
+          <option value="business_owner">Business Owner / Stakeholder</option>
+          <option value="admin">System Administrator</option>
+        </select>
+      </div>
+      <div class="form-group" id="uActiveGroup" style="display: none;">
+        <label for="uActive">Account Status</label>
+        <select id="uActive">
+          <option value="true">Active</option>
+          <option value="false">Deactivated</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalUser')">Discard</button>
+        <button type="submit" class="btn btn-primary" id="btnUserSubmit">Register User</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner-box">
+      <div class="spinner"></div>
+      <div class="loading-text">Synchronizing Workspace Ledger...</div>
+    </div>
+  </div>
+
+  <!-- Alert Toast System -->
+  <div class="toast" id="toast">Voucher updated successfully!</div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Razorpay Web Checkout SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
